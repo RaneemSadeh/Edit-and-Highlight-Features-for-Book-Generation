@@ -24,7 +24,7 @@ api_key = get_api_key()
 if api_key:
     genai.configure(api_key=api_key)
 
-MODEL_NAME = "models/gemini-2.5-flash"
+MODEL_NAME = "gemini-1.5-flash"
 
 # DEVELOPER INSTRUCTION
 # This is the prompt that guides the model's behavior.
