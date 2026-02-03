@@ -3,11 +3,12 @@ import os
 import shutil
 from pathlib import Path
 from docling.document_converter import DocumentConverter
+import pypdf
 import app.history as history
 from app.chat import chat_with_data
 from app.consolidator import generate_summary
 
-# --- Configuration ---
+# ... (Configuration setup remains the same) ...
 st.set_page_config(page_title="Book Gen Pipeline", layout="wide")
 
 # Validating API Key
@@ -50,22 +51,35 @@ with st.sidebar:
                     f.write(uploaded_file.getbuffer())
                 
                 try:
-                    # Initialize converter and convert
-                    # Note: We re-init converter to keep it simple, but caching is possible
+                    # Try advanced extraction first
                     converter = DocumentConverter()
                     result = converter.convert(file_path)
                     md_content = result.document.export_to_markdown()
+                    st.success(f"✅ Extracted (Advanced): {uploaded_file.name}")
                     
-                    # Save markdown
+                except Exception as e:
+                    # Fallback to standard pypdf extraction
+                    print(f"Docling failed: {e}. Falling back to pypdf.")
+                    try:
+                        reader = pypdf.PdfReader(file_path)
+                        text_content = ""
+                        for page in reader.pages:
+                            text_content += page.extract_text() + "\n\n"
+                        
+                        md_content = f"# {uploaded_file.name}\n\n{text_content}"
+                        st.warning(f"⚠️ Used standard extraction for {uploaded_file.name} (Advanced method failed).")
+                        
+                    except Exception as fallback_e:
+                        st.error(f"❌ Failed to extract {uploaded_file.name}: {str(fallback_e)}")
+                        md_content = None # Skip saving if both fail
+
+                # Save markdown if content was extracted
+                if md_content:
                     output_filename = f"{file_path.stem}.md"
                     output_path = OUTPUT_DIR / output_filename
                     
                     with open(output_path, "w", encoding="utf-8") as f:
                         f.write(md_content)
-                        
-                    st.success(f"✅ Extracted: {uploaded_file.name}")
-                except Exception as e:
-                    st.error(f"❌ Failed: {uploaded_file.name} - {str(e)}")
                 
                 progress_bar.progress((index + 1) / total_files)
                 status_text.empty()
