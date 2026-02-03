@@ -6,10 +6,12 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
-print("Listing available models:")
 try:
-    for m in genai.list_models():
-        if "generateContent" in m.supported_generation_methods:
-            print(f"- {m.name}")
+    with open("models.txt", "w", encoding="utf-8") as f:
+        f.write("Available models:\n")
+        for m in genai.list_models():
+            if "generateContent" in m.supported_generation_methods:
+                f.write(f"{m.name}\n")
+    print("Models written to models.txt")
 except Exception as e:
     print(f"Error listing models: {e}")

@@ -34,7 +34,7 @@ if api_key:
 # Fallback to 1.5-flash if 3.0 fails (handled in try/except or configuration)
 # Note: For this script we will try to instantiate the model directly.
 # Switch to a known stable model to prevent timeouts
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-2.5-flash"
 # User asked for "Gemini 3 flash". In 2026 this is likely valid.
 # We will set it to "gemini-1.5-flash-latest" or similar if the specific string is elusive, 
 # but let's try a standard newer string if possible or stick to the known working one for stability 
