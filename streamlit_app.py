@@ -43,8 +43,12 @@ if "md_content" not in st.session_state:
     else:
         st.session_state.md_content = "# No Base Context\n\nPlease generate the base context first."
 
+
 if "highlights_data" not in st.session_state:
     st.session_state.highlights_data = viewer.load_highlights()
+
+if "editor_key_version" not in st.session_state:
+    st.session_state.editor_key_version = 0
 
 # --- Sidebar: Upload & Consolidation ---
 with st.sidebar:
@@ -137,6 +141,7 @@ with st.sidebar:
                     
                     # Update session state and force rerun to show content immediately
                     st.session_state.md_content = summary_md
+                    st.session_state.editor_key_version += 1 # Force editor reload
                     st.rerun()
             except Exception as e:
                 st.error(f"❌ Error during consolidation: {e}")
@@ -368,7 +373,7 @@ with viewer_col:
             new_content = word_like_editor(
                 content=st.session_state.md_content,
                 height=600,
-                key="editor_component"
+                key=f"editor_component_{st.session_state.editor_key_version}"
             )
             
             st.markdown("---")
