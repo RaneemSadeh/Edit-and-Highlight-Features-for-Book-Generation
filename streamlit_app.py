@@ -134,6 +134,10 @@ with st.sidebar:
                         
                     st.success("✅ Consolidation Complete!")
                     st.markdown(f"**Output saved to:** `{output_file}`")
+                    
+                    # Update session state and force rerun to show content immediately
+                    st.session_state.md_content = summary_md
+                    st.rerun()
             except Exception as e:
                 st.error(f"❌ Error during consolidation: {e}")
     
