@@ -1,21 +1,21 @@
-# 📚 Book Generation Pipeline - Edit & Highlight Features
+# Book Generation Pipeline - Edit & Highlight Features
 
-## 🎯 Overview
+## Overview
 
 This document provides comprehensive technical and business documentation for the **Edit & Highlight Features** added to the Book Generation Pipeline application. These features transform the application from a static document viewer into an interactive knowledge management system with advanced editing and annotation capabilities.
 
 ---
 
-## 🚀 New Features
+## New Features
 
 ### 1. **Live Document Editing**
 Transform your consolidated knowledge base in real-time with a professional, Word-like editing experience.
 
 **Business Value:**
-- ✅ Eliminate the need for external editors
-- ✅ Instant updates to your knowledge base
-- ✅ Seamless integration with AI chat functionality
-- ✅ Version control through save/revert mechanisms
+- Eliminate the need for external editors
+- Instant updates to your knowledge base
+- Seamless integration with AI chat functionality
+- Version control through save/revert mechanisms
 
 **Technical Highlights:**
 - Custom Streamlit component with bidirectional text support (RTL/LTR)
@@ -27,10 +27,10 @@ Transform your consolidated knowledge base in real-time with a professional, Wor
 Annotate and emphasize important content with an intelligent highlighting engine that understands markdown structure.
 
 **Business Value:**
-- ✅ Visual knowledge organization and categorization
-- ✅ Quick identification of key concepts
-- ✅ Color-coded information hierarchy
-- ✅ Persistent annotations across sessions
+- Visual knowledge organization and categorization
+- Quick identification of key concepts
+- Color-coded information hierarchy
+- Persistent annotations across sessions
 
 **Technical Highlights:**
 - Regex-based smart matching that ignores markdown syntax
@@ -43,9 +43,9 @@ Annotate and emphasize important content with an intelligent highlighting engine
 Full support for Arabic and English content with automatic text direction detection.
 
 **Business Value:**
-- ✅ Native support for Al Jazeera's multilingual content
-- ✅ Professional presentation of mixed-language documents
-- ✅ Culturally appropriate text alignment
+- Native support for Al Jazeera's multilingual content
+- Professional presentation of mixed-language documents
+- Culturally appropriate text alignment
 
 **Technical Highlights:**
 - RTL (Right-to-Left) base direction with `dir="auto"` for mixed content
@@ -56,9 +56,9 @@ Full support for Arabic and English content with automatic text direction detect
 Separate viewing and editing modes for focused workflows.
 
 **Business Value:**
-- ✅ Clean reading experience without editing clutter
-- ✅ Focused editing environment
-- ✅ Reduced accidental modifications
+- Clean reading experience without editing clutter
+- Focused editing environment
+- Reduced accidental modifications
 
 **Technical Highlights:**
 - Tab-based UI separation (`View` and `Edit` tabs)
@@ -67,73 +67,18 @@ Separate viewing and editing modes for focused workflows.
 
 ---
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 ### System Components
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    streamlit_app.py                         │
-│                   (Main Application)                        │
-└─────────────────────────────────────────────────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-        ▼                   ▼                   ▼
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-│  viewer.py   │   │word_like_    │   │  history.py  │
-│              │   │editor.py     │   │              │
-│ - Highlights │   │              │   │ - Sessions   │
-│ - Rendering  │   │ - Editor UI  │   │ - Messages   │
-└──────────────┘   └──────────────┘   └──────────────┘
-        │                   │
-        │                   ▼
-        │          ┌──────────────────┐
-        │          │ word_editor_     │
-        │          │ component/       │
-        │          │ index.html       │
-        │          │                  │
-        │          │ - contenteditable│
-        │          │ - RTL support    │
-        │          │ - Streamlit sync │
-        │          └──────────────────┘
-        │
-        ▼
-┌──────────────────────────────────────┐
-│  consolidated_docs/                  │
-│  ├── base_context.md                 │
-│  └── highlights_metadata.json        │
-└──────────────────────────────────────┘
-```
+
+<img width="959" height="824" alt="image" src="https://github.com/user-attachments/assets/63dcc99e-cdd1-4495-8945-57ef398e2888" />
+
 
 ### State Management Flow
 
-```mermaid
-graph TD
-    A[User Opens App] --> B{base_context.md exists?}
-    B -->|Yes| C[Load into st.session_state.md_content]
-    B -->|No| D[Show placeholder message]
-    C --> E[Load highlights_metadata.json]
-    D --> E
-    E --> F[Initialize viewer_collapsed state]
-    F --> G[Render UI]
-    
-    G --> H{User Action}
-    H -->|Edit Text| I[Update in Editor Component]
-    H -->|Add Highlight| J[Add to highlights list]
-    H -->|Save| K[Write to base_context.md]
-    
-    I --> L[Debounce 300ms]
-    L --> M[Sync to session_state]
-    
-    J --> N[Save to highlights_metadata.json]
-    N --> O[Reload highlights]
-    O --> P[st.rerun]
-    
-    K --> Q[Update session_state]
-    Q --> P
-    P --> G
-```
+<img width="831" height="949" alt="image" src="https://github.com/user-attachments/assets/17a6aca5-2cdb-4c6d-95b5-c0a0d292125d" />
+
 
 ### Key Implementation Details
 
@@ -208,7 +153,7 @@ editor.addEventListener('input', () => {
 
 ---
 
-## 📋 Feature Specifications
+## Feature Specifications
 
 ### View Mode
 
@@ -244,7 +189,7 @@ editor.addEventListener('input', () => {
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -317,7 +262,7 @@ The application will open in your default browser at `http://localhost:8501`
 
 ---
 
-## 📖 User Guide
+## User Guide
 
 ### Getting Started
 
@@ -363,35 +308,8 @@ The application will open in your default browser at `http://localhost:8501`
 2. Ask questions about your uploaded documents
 3. The AI uses the base context (including your edits) to answer
 
----
 
-## 🎨 Screenshots
-
-> **Note:** Please add screenshots in the following sections
-
-### 1. Upload & Processing
-<!-- Add screenshot of file upload interface -->
-![Upload Interface](./screenshots/upload.png)
-
-### 2. Base Context Viewer
-<!-- Add screenshot of View tab with highlighted content -->
-![View Mode](./screenshots/view_mode.png)
-
-### 3. Word-like Editor
-<!-- Add screenshot of Edit tab with editor -->
-![Edit Mode](./screenshots/edit_mode.png)
-
-### 4. Highlighting Interface
-<!-- Add screenshot of highlight management section -->
-![Highlighting](./screenshots/highlighting.png)
-
-### 5. Chat Interface
-<!-- Add screenshot of chat with AI -->
-![Chat Interface](./screenshots/chat.png)
-
----
-
-## 🔧 Technical Deep Dive
+## Technical Deep Dive
 
 ### File Structure
 ```
@@ -477,7 +395,7 @@ The application uses Google's Gemini AI for two purposes:
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -513,58 +431,7 @@ The application uses Google's Gemini AI for two purposes:
 
 ---
 
-## 🔄 Workflow Examples
-
-### Scenario 1: Research Paper Analysis
-1. Upload 5 research papers (PDF)
-2. Generate base context → AI creates unified summary
-3. Highlight key findings in yellow
-4. Highlight methodology in blue
-5. Edit to add personal notes
-6. Chat: "What are the common themes across these papers?"
-
-### Scenario 2: Meeting Notes Consolidation
-1. Upload meeting notes (TXT/MD files)
-2. Generate base context
-3. Highlight action items in orange
-4. Highlight decisions in green
-5. Edit to add follow-up tasks
-6. Chat: "What action items are assigned to me?"
-
-### Scenario 3: Book Chapter Review
-1. Upload book chapters (PDF/DOCX)
-2. Generate base context
-3. Highlight important quotes in pink
-4. Edit to add commentary
-5. Chat: "Summarize the main arguments in Chapter 3"
-
----
-
-## 🚀 Future Enhancements
-
-### Planned Features
-- [ ] **Multi-color highlighting per text segment** (currently one color per phrase)
-- [ ] **Highlight categories/tags** (e.g., "Important", "Question", "Action Item")
-- [ ] **Export highlighted document** (PDF/HTML with colors preserved)
-- [ ] **Collaborative highlighting** (multi-user support)
-- [ ] **Search within highlights** (filter by color/text)
-- [ ] **Highlight statistics** (most highlighted sections)
-- [ ] **Version history** (track edits over time)
-- [ ] **Rich text formatting** (bold, italic, lists in editor)
-- [ ] **Inline comments** (annotations without highlighting)
-- [ ] **Mobile-responsive design** (touch-friendly highlighting)
-
-### Technical Improvements
-- [ ] Implement proper HTML sanitization (`bleach` library)
-- [ ] Add unit tests for highlighting algorithm
-- [ ] Optimize regex performance for large documents
-- [ ] Add undo/redo functionality in editor
-- [ ] Implement autosave (periodic background saves)
-- [ ] Add conflict resolution for concurrent edits
-
----
-
-## 📊 Business Impact
+## Business Impact
 
 ### Quantifiable Benefits
 
@@ -585,45 +452,8 @@ The application uses Google's Gemini AI for two purposes:
 
 ---
 
-## 👥 Contributing
 
-### Development Setup
-```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
-
-# Install dev dependencies
-pip install -r requirements.txt
-
-# Run in development mode
-streamlit run streamlit_app.py
-```
-
-### Code Style
-- Follow PEP 8 for Python code
-- Use type hints where applicable
-- Document functions with docstrings
-- Keep functions focused and modular
-
-### Submitting Changes
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Make your changes
-4. Test thoroughly
-5. Commit: `git commit -m "Add: your feature description"`
-6. Push: `git push origin feature/your-feature-name`
-7. Open a Pull Request
-
----
-
-## 📄 License
-
-[Specify your license here, e.g., MIT, Apache 2.0, etc.]
-
----
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Streamlit** - For the amazing web framework
 - **Google Gemini AI** - For powerful language models
@@ -632,14 +462,6 @@ streamlit run streamlit_app.py
 
 ---
 
-## 📞 Support
-
-For questions, issues, or feature requests:
-- **GitHub Issues:** [Link to your repository issues page]
-- **Email:** [Your contact email]
-- **Documentation:** [Link to additional docs if any]
-
----
-
 **Last Updated:** February 6, 2026  
-**Version:** 1.0.0 (Edit & Highlight Features)
+**Version:** 12.0.0 (Edit & Highlight Features)
+**By:** Zakaria Sadeh & Raneem Sadeh
