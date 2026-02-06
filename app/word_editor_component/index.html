@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Traditional Arabic', sans-serif;
+            background: #ffffff;
+            direction: rtl;
+            height: 100vh;
+            /* Fill the iframe */
+            overflow: hidden;
+            /* Prevent body scroll */
+        }
+
+        .container {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            height: 100%;
+            /* Fill the body */
+        }
+
+        #editor {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 2;
+            direction: rtl;
+            text-align: right;
+            outline: none;
+            color: #1a1a1a;
+            background: #ffffff;
+            min-height: 400px;
+        }
+
+        #editor:focus {
+            background: #fffef7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="editor" contenteditable="true" spellcheck="false"></div>
+    </div>
+
+    <script>
+        // ----------------------------------------------------
+        // Streamlit Component Logic
+        // ----------------------------------------------------
+        function sendMessageToStreamlitClient(type, data) {
+            const outData = Object.assign({
+                isStreamlitMessage: true,
+                type: type,
+            }, data);
+            window.parent.postMessage(outData, "*");
+        }
+
+        const Streamlit = {
+            setComponentValue: function (value) {
+                sendMessageToStreamlitClient("streamlit:setComponentValue", { value: value });
+            },
+            setFrameHeight: function (height) {
+                sendMessageToStreamlitClient("streamlit:setFrameHeight", { height: height });
+            }
+        };
+
+        // ----------------------------------------------------
+        // Editor Logic
+        // ----------------------------------------------------
+        const editor = document.getElementById('editor');
+        let lastReceivedContent = null;
+
+        // Initialize
+        function onRender(event) {
+            if (!window.rendered) {
+                const { args } = event.data;
+
+                // Smart content update
+                if (args.content !== undefined) {
+                    // Only update if it's the first load OR the upstream content changed
+                    if (lastReceivedContent === null || args.content !== lastReceivedContent) {
+                        if (editor.innerHTML !== args.content) {
+                            editor.innerHTML = args.content;
+                        }
+                        lastReceivedContent = args.content;
+                    }
+                }
+
+                // Update height
+                Streamlit.setFrameHeight(args.height || 600);
+                window.rendered = true;
+            }
+        }
+
+        // Listen for updates from Streamlit
+        window.addEventListener("message", onRender);
+
+        // Sync changes back to Streamlit
+        let timeoutId;
+        editor.addEventListener('input', () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                Streamlit.setComponentValue(editor.innerText);
+            }, 300); // Debounce updates
+        });
+
+        // Notify Streamlit we are ready (standard handshake isn't strictly needed for simple HTML but good practice)
+        sendMessageToStreamlitClient("streamlit:componentReady", { apiVersion: 1 });
+
+        // ----------------------------------------------------
+        // Extra Editor Behaviors
+        // ----------------------------------------------------
+
+        // Prevent default paste behavior (paste as plain text)
+        editor.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text/plain');
+            document.execCommand('insertText', false, text);
+        });
+
+        // Handle Enter key (insert line break instead of div)
+        editor.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.execCommand('insertLineBreak');
+            }
+        });
+
+    </script>
+</body>
+
+</html>
